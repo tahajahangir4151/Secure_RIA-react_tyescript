@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import {
@@ -8,7 +9,24 @@ import {
 } from "react-router-dom";
 
 function App() {
-  const isAuthenticated = localStorage.getItem("userInfo");
+  // Maintain a state to track if the user is authenticated
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
+    !!localStorage.getItem("userInfo")
+  );
+
+  useEffect(() => {
+    // Track localStorage changes, in case user manually logs out or clears storage
+    const handleStorageChange = () => {
+      setIsAuthenticated(!!localStorage.getItem("userInfo"));
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   return (
     <Router>
       <Routes>
@@ -19,12 +37,10 @@ function App() {
             isAuthenticated ? (
               <Navigate to={"/dashboard"} replace={true} />
             ) : (
-              <Login />
+              <Login onLoginSuccess={() => setIsAuthenticated(true)} />
             )
           }
         />
-
-        <Route path="/login" element={<Login />} />
 
         {/* Protected Route */}
         <Route
@@ -33,7 +49,7 @@ function App() {
             isAuthenticated ? (
               <Dashboard />
             ) : (
-              <Navigate to="/login" replace={true} />
+              <Navigate to="/" replace={true} />
             )
           }
         />

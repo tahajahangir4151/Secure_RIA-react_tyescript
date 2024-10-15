@@ -11,7 +11,11 @@ import LogoImg from "../images/Logo.jpeg";
 import { useNavigate } from "react-router-dom";
 import validator from "validator";
 
-const Login: React.FC = () => {
+interface loginProps{
+  onLoginSuccess:()=>void
+}
+
+const Login: React.FC<loginProps> = ({onLoginSuccess}) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [emailError, setEmailError] = useState<string>("");
@@ -55,6 +59,11 @@ const Login: React.FC = () => {
     if (isvalid) {
       localStorage.setItem("userInfo", JSON.stringify({ email, password }));
       console.log("userInfo", JSON.stringify({ email, password }));
+
+      // Trigger authentication state change in App component
+      onLoginSuccess();
+      
+      // Navigate to dashboard
       navigate("/dashboard");
     }
     setEmail("");
