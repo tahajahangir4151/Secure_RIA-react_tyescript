@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 
 function App() {
-  const isAuthenticated = localStorage.getItem("user");
+  const isAuthenticated = localStorage.getItem("userInfo");
   return (
     <Router>
       <Routes>
@@ -29,7 +29,13 @@ function App() {
         {/* Protected Route */}
         <Route
           path="/dashboard"
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
+          element={
+            isAuthenticated ? (
+              <Dashboard />
+            ) : (
+              <Navigate to="/login" replace={true} />
+            )
+          }
         />
       </Routes>
     </Router>

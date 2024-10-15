@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -6,12 +7,60 @@ import {
   Typography,
   Link,
 } from "@mui/material";
-import React from "react";
 import LogoImg from "../images/Logo.jpeg";
+import { useNavigate } from "react-router-dom";
+import validator from "validator";
 
 const Login: React.FC = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
 
-    
+  const navigate = useNavigate();
+
+  //Form validation and handle submit
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    let isvalid = true;
+
+    //Email validation
+    if (email === "") {
+      setEmailError("Email must be required");
+      isvalid = false;
+      return;
+    } else if (!validator.isEmail(email)) {
+      setEmailError("Please Enter a valid Email");
+      isvalid = false;
+      return;
+    } else {
+      setEmailError("");
+    }
+
+    //Password validation
+    if (password === "") {
+      setPasswordError("Password must be required");
+      isvalid = false;
+      return;
+    } else if (password.length < 6) {
+      setPasswordError("Password at least 6 characters long");
+      isvalid = false;
+      return;
+    } else {
+      setPasswordError("");
+    }
+
+    //If Form is valid then store in the local storage and navigate
+    if (isvalid) {
+      localStorage.setItem("userInfo", JSON.stringify({ email, password }));
+      console.log("userInfo", JSON.stringify({ email, password }));
+      navigate("/dashboard");
+    }
+    setEmail("");
+    setPassword("");
+  };
+
   return (
     <>
       {/* Logo in the top left corner */}
@@ -19,14 +68,14 @@ const Login: React.FC = () => {
         component={"img"}
         src={LogoImg}
         alt="Logo"
-        sx={{ position: "absolute", top: "20px", left: "20px", height: "60px" }}
+        sx={{ position: "absolute", top: "50px", left: "50px", height: "60px" }}
       />
 
       {/* Login Form */}
       <Container
         maxWidth="xs"
         sx={{
-          marginTop: "150px",
+          marginTop: "170px",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -68,11 +117,15 @@ const Login: React.FC = () => {
           </Typography>
 
           {/* Login Form Fields */}
-          <form style={{ marginTop: "20px" }}>
+          <form style={{ marginTop: "20px" }} onSubmit={handleSubmit}>
             <TextField
               label="Email"
               fullWidth
               margin="normal"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              error={!!emailError}
+              helperText={emailError}
               sx={{
                 backgroundColor: "#f9f9f9",
                 borderRadius: "5px",
@@ -84,6 +137,10 @@ const Login: React.FC = () => {
               fullWidth
               margin="normal"
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              error={!!passwordError}
+              helperText={passwordError}
               sx={{ backgroundColor: "#f9f9f9", borderRadius: "5px" }}
             />
 
@@ -93,11 +150,15 @@ const Login: React.FC = () => {
               alignItems="center"
               marginTop="8px"
             >
-                <Box></Box>
+              <Box></Box>
               <Link
                 href="#"
                 underline="hover"
-                sx={{ fontSize: "14px",fontWeight:"bolder", color: "#0473E9" }}
+                sx={{
+                  fontSize: "14px",
+                  fontWeight: "bolder",
+                  color: "#0473E9",
+                }}
               >
                 Forgot Password?
               </Link>
@@ -113,7 +174,7 @@ const Login: React.FC = () => {
                 borderRadius: "50px",
                 fontSize: "16px",
                 padding: "10px",
-                width:"85%",
+                width: "85%",
                 marginTop: "20px",
                 "&:hover": {
                   backgroundColor: "#035bb5",
