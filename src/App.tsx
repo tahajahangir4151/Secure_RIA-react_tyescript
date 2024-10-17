@@ -1,56 +1,98 @@
-import { useEffect, useState } from "react";
-import Dashboard from "./pages/Dashboard";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { useState, useEffect } from "react";
+import DashboardLayout from "./layout/DashboardLayout";
+import Home from "./pages/Home";
 import Login from "./pages/Login";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import NewEmailCompaign from "./pages/NewEmailCompaign";
+import Targets from "./pages/Targets";
+import EmailTemplates from "./pages/emailTemplates";
+import LandinPageTemplate from "./pages/LandinPageTemplate";
+import CompaignRunning from "./pages/CompaignRunning";
+import Reporting from "./pages/Reporting";
+import { Settings } from "@mui/icons-material";
 
 function App() {
-  // Maintain a state to track if the user is authenticated
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
     !!localStorage.getItem("userInfo")
   );
 
   useEffect(() => {
-    // Track localStorage changes, in case user manually logs out or clears storage
     const handleStorageChange = () => {
       setIsAuthenticated(!!localStorage.getItem("userInfo"));
     };
-
     window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   return (
     <Router>
       <Routes>
-        {/* Redirect to Dashboard if loggedIn otherwise show Login  */}
         <Route
           path="/"
           element={
             isAuthenticated ? (
-              <Navigate to={"/dashboard"} replace={true} />
+              <DashboardLayout>
+                <Home />
+              </DashboardLayout>
             ) : (
               <Login onLoginSuccess={() => setIsAuthenticated(true)} />
             )
           }
-        />
-
-        {/* Protected Route */}
+        />{" "}
         <Route
-          path="/dashboard"
+          path="/new-email-campaign"
           element={
-            isAuthenticated ? (
-              <Dashboard />
-            ) : (
-              <Navigate to="/" replace={true} />
-            )
+            <DashboardLayout>
+              <NewEmailCompaign />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/targets"
+          element={
+            <DashboardLayout>
+              <Targets />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/email-templates"
+          element={
+            <DashboardLayout>
+              <EmailTemplates />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/landing-page-templates"
+          element={
+            <DashboardLayout>
+              <LandinPageTemplate />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/campaigns-running"
+          element={
+            <DashboardLayout>
+              <CompaignRunning />
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/reporting"
+          element={
+            <DashboardLayout>
+              <Reporting />{" "}
+            </DashboardLayout>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <DashboardLayout>
+              <Settings />
+            </DashboardLayout>
           }
         />
       </Routes>

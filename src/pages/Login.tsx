@@ -64,7 +64,7 @@ const Login: React.FC<loginProps> = ({onLoginSuccess}) => {
       onLoginSuccess();
       
       // Navigate to dashboard
-      navigate("/dashboard");
+      navigate("/");
     }
     setEmail("");
     setPassword("");
