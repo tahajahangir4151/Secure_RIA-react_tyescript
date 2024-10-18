@@ -4,13 +4,16 @@ import LogoImg from "../images/Logo.jpeg";
 import { Link, useLocation } from "react-router-dom";
 
 interface SidebarProps {
-  setActiveMenu: (menuName: string) => void; // Prop to set the active menu
+  setActiveMenu: (menuName: string) => void;
+  setIsSidebarOpen?: (isOpen: boolean) => void; // Keeping it optional
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ setActiveMenu }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  setActiveMenu,
+  setIsSidebarOpen,
+}) => {
   const [activeItem, setActiveItem] = useState("Dashboard");
-
-const location = useLocation()
+  const location = useLocation();
 
   const menuItems = [
     { text: "Dashboard", path: "/" },
@@ -72,7 +75,10 @@ const location = useLocation()
             }}
             onClick={() => {
               setActiveItem(item.text);
-              setActiveMenu(item.text === "Dashboard" ? "" : item.text); // Set active menu; for Dashboard, set empty
+              setActiveMenu(item.text === "Dashboard" ? "" : item.text);
+              if (setIsSidebarOpen) {
+                setIsSidebarOpen(false); // Close sidebar
+              }
             }}
           >
             {item.text}
@@ -93,6 +99,11 @@ const location = useLocation()
           borderRadius: "4px",
           cursor: "pointer",
           fontWeight: "bold",
+        }}
+        onClick={() => {
+          if (setIsSidebarOpen) {
+            setIsSidebarOpen(false); // Close sidebar on logout
+          }
         }}
       >
         Log Out
