@@ -3,3 +3,28 @@
   line-height: 1.5;
   font-weight: 400;
 }
+.custom-datepicker {
+  border: 1px solid #053065;
+  border-radius: 5px;
+  height: 40px;
+  padding: 8px;
+  width: 100%;
+  font-size: 16px;
+  color: #000;
+  margin-top: 10px;
+}
+
+/* Add hover and focus effects */
+.custom-datepicker:focus {
+  outline: none;
+  border-color: #0473e9;
+}
+
+.dropdown {
+  max-height: 200px; 
+   overflow-y: auto; 
+  position: absolute; 
+  z-index: 1000;
+  background-color: white; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
