@@ -12,7 +12,6 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { SelectChangeEvent } from "@mui/material";
 
@@ -28,6 +27,7 @@ interface FormData {
   };
   launchDate: Date | null;
   timeZone: string;
+  startTime: string;
 }
 
 // Define the shape of the error messages
@@ -37,6 +37,8 @@ interface Errors {
   phishingEmail: boolean;
   landingPage: boolean;
   launchDate: boolean;
+  timeZone: boolean;
+  startTime: boolean;
 }
 
 const NewEmailCompaign: React.FC = () => {
@@ -48,6 +50,7 @@ const NewEmailCompaign: React.FC = () => {
     followUpEmail: { option1: false, option2: false },
     launchDate: null,
     timeZone: "",
+    startTime: "",
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [timeZones, setTimeZones] = useState<string[]>([]);
@@ -57,12 +60,16 @@ const NewEmailCompaign: React.FC = () => {
     phishingEmail: false,
     landingPage: false,
     launchDate: false,
+    timeZone: false,
+    startTime: false,
   });
 
   useEffect(() => {
     const fetchTimeZones = async () => {
       try {
-        const response = await fetch("https://worldtimeapi.org/api/timezone");
+        const response = await fetch(
+          "https://timeapi.io/api/timezone/availabletimezones"
+        );
         if (!response.ok) {
           throw new Error("API request failed with status " + response.status);
         }
@@ -111,6 +118,8 @@ const NewEmailCompaign: React.FC = () => {
       phishingEmail: formData.phishingEmail === "",
       landingPage: formData.landingPage === "",
       launchDate: showDatePicker && formData.launchDate === null,
+      timeZone: showDatePicker && formData.timeZone === "",
+      startTime: showDatePicker && formData.startTime === "",
     };
     setErrors(newErrors);
     return !Object.values(newErrors).some((error) => error);
@@ -128,6 +137,7 @@ const NewEmailCompaign: React.FC = () => {
         followUpEmail: { option1: false, option2: false },
         launchDate: null,
         timeZone: "",
+        startTime: "",
       });
       setShowDatePicker(false);
     } else {
@@ -354,29 +364,6 @@ const NewEmailCompaign: React.FC = () => {
           </Box>{" "}
           {showDatePicker && (
             <>
-              {/* <Typography
-                variant="body1"
-                sx={{
-                  marginBottom: "5px",
-                  fontWeight: "bold",
-                  color: "#0473E9",
-                  mt: "15px",
-                }}
-              >
-                Select scheduled date and time{" "}
-              </Typography>
-              <DatePicker
-                selected={formData.launchDate}
-                onChange={handleLaunchDateChange}
-                showTimeSelect
-                dateFormat="Pp"
-                className="custom-datepicker"
-                placeholderText="select date & time"
-              />
-              {errors.launchDate && (
-                <p style={{ color: "red" }}>Launch Date is required</p>
-              )} */}
-
               <Typography
                 variant="body1"
                 sx={{
@@ -388,33 +375,41 @@ const NewEmailCompaign: React.FC = () => {
               >
                 Select Time Zone:
               </Typography>
-              <Grid item xs={12} md={6} mt={"10px"}>
-                <FormControl fullWidth>
-                  <Select
-                    value={formData.timeZone}
-                    onChange={(e) => handleSelectChange(e, "timeZone")}
-                    displayEmpty
-                    MenuProps={menuProps}
-                    sx={{
-                      mt: "5px",
-                      border: "1px solid #053065",
-                      height: "45px",
-                      borderRadius: "5px",
-                    }}
-                  >
-                    <MenuItem value="">
-                      <em>Select Time Zone</em>
+              <FormControl fullWidth error={errors.timeZone}>
+                <Select
+                  value={formData.timeZone}
+                  onChange={(e) => handleSelectChange(e, "timeZone")}
+                  displayEmpty
+                  MenuProps={menuProps}
+                  sx={{
+                    mt: "5px",
+                    border: "1px solid #053065",
+                    height: "45px",
+                    borderRadius: "5px",
+                    "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "red",
+                    },
+                  }}
+                >
+                  <MenuItem value="">
+                    <em>Select Time Zone</em>
+                  </MenuItem>
+                  {timeZones.map((zone, index) => (
+                    <MenuItem key={index} value={zone}>
+                      {zone}
                     </MenuItem>
-                    {timeZones.map((zone, index) => (
-                      <MenuItem key={index} value={zone}>
-                        {zone}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} md={6} mt={"10px"} display={"flex"}>
-                <Box display={"flex"}>
+                  ))}
+                </Select>
+
+                {/* Display the error message in red */}
+                {errors.timeZone && (
+                  <FormHelperText error>Time zone is required</FormHelperText>
+                )}
+              </FormControl>
+
+              {/* Row with Start Date and Start Time */}
+              <Grid container spacing={2} mt={"10px"}>
+                <Grid item xs={12} sm={6}>
                   <Typography
                     variant="body1"
                     sx={{
@@ -424,13 +419,23 @@ const NewEmailCompaign: React.FC = () => {
                       mt: "15px",
                     }}
                   >
-                    Start Date:{" "}
+                    Start Date:
                   </Typography>
                   <TextField
                     fullWidth
                     type="date"
-                    placeholder="Sart Date"
+                    placeholder="Start Date"
                     name="startDate"
+                    value={
+                      formData.launchDate
+                        ? formData.launchDate.toISOString().split("T")[0]
+                        : ""
+                    }
+                    onChange={(e) =>
+                      handleLaunchDateChange(new Date(e.target.value))
+                    }
+                    error={errors.launchDate}
+                    helperText={errors.launchDate && "Start date is required"}
                     InputLabelProps={{
                       shrink: true,
                       sx: {
@@ -453,6 +458,9 @@ const NewEmailCompaign: React.FC = () => {
                       },
                     }}
                   />
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
                   <Typography
                     variant="body1"
                     sx={{
@@ -467,8 +475,12 @@ const NewEmailCompaign: React.FC = () => {
                   <TextField
                     fullWidth
                     type="time"
-                    placeholder="Sart Time"
+                    placeholder="Start Time"
                     name="startTime"
+                    value={formData.startTime}
+                    onChange={handleChange}
+                    error={errors.startTime}
+                    helperText={errors.startTime && "Start time is required"}
                     InputLabelProps={{
                       shrink: true,
                       sx: {
@@ -491,7 +503,7 @@ const NewEmailCompaign: React.FC = () => {
                       },
                     }}
                   />
-                </Box>
+                </Grid>
               </Grid>
             </>
           )}

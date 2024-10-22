@@ -3,17 +3,11 @@ import {
   Box,
   Button,
   Grid,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Typography,
+   Typography,
 } from "@mui/material";
 import { compaignData } from "../data/compaignData";
+import TableComponent from "../components/Table";
+import PaginationComponent from "../components/Pagination";
 
 const Home: React.FC = () => {
   const [page, setPage] = useState(0);
@@ -36,6 +30,14 @@ const Home: React.FC = () => {
   const getRowBackgroundColor = (index: number) => {
     return index % 2 === 0 ? "#E6F2FF" : "#FFFFFF";
   };
+
+  const headers = [
+    "Sent Date",
+    "Name",
+    "Open",
+    "Internal Clicks",
+    "Time Opened",
+  ];
 
   return (
     <>
@@ -88,95 +90,23 @@ const Home: React.FC = () => {
           </Button>
         </Grid>
       </Grid>
-
-      <Box sx={{ mt: 3, overflowX: "auto" }}>
-        <TableContainer
-          component={Paper}
-          sx={{
-            border: "1px solid #C1C1C1",
-          }}
-        >
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#000000",
-                    fontSize: "14px",
-                  }}
-                >
-                  Sent Date
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#000000",
-                    fontSize: "14px",
-                  }}
-                >
-                  Name
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#000000",
-                    fontSize: "14px",
-                  }}
-                >
-                  Open
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#000000",
-                    fontSize: "14px",
-                  }}
-                >
-                  Internal Clicks
-                </TableCell>
-                <TableCell
-                  sx={{
-                    fontWeight: "bold",
-                    color: "#000000",
-                    fontSize: "14px",
-                  }}
-                >
-                  Time Opened
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {compaignData
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => (
-                  <TableRow
-                    key={index}
-                    sx={{ backgroundColor: getRowBackgroundColor(index) }}
-                  >
-                    <TableCell color="#000000">{row.setDate}</TableCell>
-                    <TableCell color="#000000">{row.name}</TableCell>
-                    <TableCell color="#000000">{row.openRate}</TableCell>
-                    <TableCell color="#000000">{row.internalClick}</TableCell>
-                    <TableCell color="#000000">{row.timeOpened}</TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-
-        {/* Pagination Component */}
-        <TablePagination
-          component={"div"}
+      <Box sx={{ mt: 3 }}>
+        <TableComponent
+          data={compaignData.slice(
+            page * rowsPerPage,
+            page * rowsPerPage + rowsPerPage
+          )}
+          headers={headers}
+          getRowBackgroundColor={getRowBackgroundColor}
+        />
+        <PaginationComponent
           count={compaignData.length}
           page={page}
-          onPageChange={handlePageChange}
           rowsPerPage={rowsPerPage}
+          onPageChange={handlePageChange}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 6, 7, 8, 9, 10]}
-          labelRowsPerPage="Rows Per Page"
         />
-      </Box>
+      </Box>{" "}
     </>
   );
 };
