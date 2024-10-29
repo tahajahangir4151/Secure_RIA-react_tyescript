@@ -2,9 +2,19 @@ import React from "react";
 import { Box, Button, Grid, Typography } from "@mui/material";
 import EmailTemplateCard from "../components/EmailTemplateCard";
 import { emailTemplateData } from "../data/emailTemplateData";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const EmailTemplates: React.FC = () => {
+  const navigate = useNavigate();
   const numberOfCards = 12;
+
+  const handleCreateTemplate = () => {
+    navigate("/template-editor"); // Navigate to TemplateEditor for creating a new template
+  };
+
+  const handleEditTemplate = (templateId: string) => {
+    navigate(`/template-editor?edit=${templateId}`); // Navigate with a query for editing
+  };
 
   return (
     <>
@@ -29,8 +39,7 @@ const EmailTemplates: React.FC = () => {
               fontSize={{ xs: "12px", md: "14px" }}
             >
               Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s.
+              industry.
             </Typography>
           </Box>
         </Grid>
@@ -41,6 +50,7 @@ const EmailTemplates: React.FC = () => {
           sx={{ display: "flex", justifyContent: "flex-end" }}
         >
           <Button
+            onClick={handleCreateTemplate}
             sx={{
               backgroundColor: "#0473E9",
               color: "#FFFFFF",
@@ -48,9 +58,7 @@ const EmailTemplates: React.FC = () => {
               padding: "5px 20px",
               borderRadius: "5px",
               height: "55px",
-              "&:hover": {
-                backgroundColor: "#005BB5",
-              },
+              "&:hover": { backgroundColor: "#005BB5" },
             }}
           >
             Create Template
@@ -58,15 +66,15 @@ const EmailTemplates: React.FC = () => {
         </Grid>
       </Grid>
 
-      {/* Email Card Section  */}
+      {/* Email Card Section */}
       <Box
         sx={{
           maxHeight: "75vh",
           overflowY: "auto",
           marginTop: 2,
           border: "0.5px solid #C1C1C1",
-          padding:"10px",
-          borderRadius:"10px"
+          padding: "10px",
+          borderRadius: "10px",
         }}
       >
         <Grid container spacing={2}>
@@ -74,7 +82,10 @@ const EmailTemplates: React.FC = () => {
             .fill(emailTemplateData)
             .map((email, index) => (
               <Grid item xs={12} sm={6} md={3} lg={4} key={index}>
-                <EmailTemplateCard email={email} />
+                <EmailTemplateCard
+                  email={email}
+                  onEdit={() => handleEditTemplate(email.id)}
+                />
               </Grid>
             ))}
         </Grid>

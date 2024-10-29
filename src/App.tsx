@@ -10,6 +10,7 @@ import LandinPageTemplate from "./pages/LandinPageTemplate";
 import CompaignRunning from "./pages/CompaignRunning";
 import Reporting from "./pages/Reporting";
 import { Settings } from "@mui/icons-material";
+import TemplateEditor from "./components/templateEditor";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
@@ -92,6 +93,14 @@ function App() {
           element={
             <DashboardLayout>
               <Settings />
+            </DashboardLayout>
+          }
+        />{" "}
+        <Route
+          path="/template-editor"
+          element={
+            <DashboardLayout>
+              <TemplateEditor />
             </DashboardLayout>
           }
         />
